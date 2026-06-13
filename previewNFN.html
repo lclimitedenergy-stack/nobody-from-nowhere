@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nobody From Nowhere — Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:     #1a1a1a;
+      --white:     #f8f6f1;
+      --mid:       #7a7570;
+      --light:     #eeebe3;
+      --rule:      rgba(26,26,26,0.1);
+      --blue:      #2e5ea8;
+      --blue-light:#e8eef8;
+      --red:       #c45c5c;
+      --sidebar-w: 260px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--white);
+      color: var(--black);
+      font-family: 'Lora', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.85;
+      overflow-x: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: #1a1a1a;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+    }
+    .sidebar-logo-wrap {
+      padding: 1.6rem 1.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .sidebar-logo-img {
+      width: 44px; height: 44px;
+      object-fit: contain;
+      filter: invert(1);
+      flex-shrink: 0;
+    }
+    .sidebar-logo-name {
+      font-family: 'Lora', serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #f5f2ec;
+      line-height: 1.3;
+    }
+    .sidebar-logo-sub {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.72rem;
+      color: rgba(245,242,236,0.4);
+      margin-top: 0.1rem;
+    }
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.8rem 0.6rem;
+    }
+    .nav-group-label {
+      font-family: 'Lora', serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(245,242,236,0.3);
+      padding: 1rem 0.8rem 0.4rem;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.8rem;
+      font-family: 'Lora', serif;
+      font-size: 0.82rem;
+      color: rgba(245,242,236,0.6);
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1.3;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      background: rgba(46,94,168,0.25);
+      color: #a8c0e8;
+    }
+    .sidebar-link .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(245,242,236,0.2);
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .sidebar-link.active .dot,
+    .sidebar-link:hover .dot { background: #a8c0e8; }
+    .sidebar-footer {
+      padding: 1.1rem 1.4rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .sidebar-ext-link {
+      font-family: 'Lora', serif;
+      font-size: 0.75rem;
+      font-style: italic;
+      color: rgba(245,242,236,0.45);
+      text-decoration: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.3rem;
+      line-height: 1.5;
+      transition: color 0.2s;
+    }
+    .sidebar-ext-link:hover { color: #a8c0e8; }
+    .sidebar-ext-link::after { content: ' ↗'; flex-shrink: 0; font-style: normal; }
+
+    /* MOBILE TOGGLE */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 0.9rem; left: 0.9rem;
+      z-index: 300;
+      background: #1a1a1a;
+      border: none;
+      border-radius: 6px;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px;
+    }
+    .sidebar-toggle span {
+      display: block; width: 100%; height: 1.5px;
+      background: #f5f2ec;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .sidebar-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .sidebar-toggle.open span:nth-child(2) { opacity: 0; }
+    .sidebar-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 190;
+    }
+
+    /* MAIN */
+    .main { margin-left: var(--sidebar-w); min-height: 100vh; }
+
+    /* HERO */
+    .hero {
+      background: var(--black);
+      padding: 3.5rem 4rem 3rem;
+      display: flex;
+      align-items: center;
+      gap: 3.5rem;
+      border-bottom: 3px solid var(--red);
+    }
+    .hero-logo {
+      width: clamp(100px, 11vw, 150px);
+      flex-shrink: 0;
+      filter: invert(1);
+      opacity: 0.9;
+    }
+    .hero-eyebrow {
+      font-family: 'Lora', serif;
+      font-size: 0.78rem;
+      font-style: italic;
+      color: rgba(245,242,236,0.45);
+      margin-bottom: 0.6rem;
+    }
+    .hero-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      color: #f5f2ec;
+    }
+    .hero-bar {
+      width: 40px; height: 3px;
+      background: var(--blue);
+      margin: 1.2rem 0;
+      border-radius: 2px;
+    }
+    .hero-verse {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: rgba(245,242,236,0.65);
+      max-width: 480px;
+      line-height: 1.75;
+    }
+    .hero-ref {
+      font-family: 'Lora', serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--blue);
+      opacity: 0.8;
+      margin-top: 0.6rem;
+    }
+
+    /* PAGE HEADER (section tops) */
+    .page-header {
+      background: var(--black);
+      padding: 3rem 4rem 2.5rem;
+      border-bottom: 3px solid var(--blue);
+    }
+    .page-header.red { border-bottom-color: var(--red); }
+    .page-header-eyebrow {
+      font-family: 'Lora', serif;
+      font-size: 0.72rem;
+      font-style: italic;
+      color: rgba(245,242,236,0.4);
+      margin-bottom: 0.6rem;
+    }
+    .page-header-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.6rem, 3vw, 2.6rem);
+      font-weight: 700;
+      color: #f5f2ec;
+      line-height: 1.15;
+    }
+    .page-header-sub {
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: rgba(245,242,236,0.6);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-top: 0.9rem;
+    }
+
+    /* CONTENT */
+    .content {
+      padding: 3.5rem 4rem;
+      max-width: 820px;
+    }
+
+    /* BODY TEXT */
+    .body-text {
+      font-size: 1rem;
+      color: #3a3835;
+      line-height: 1.9;
+      max-width: 640px;
+    }
+    .body-text + .body-text { margin-top: 0.9rem; }
+    .body-text strong { color: var(--black); }
+
+    /* SCRIPTURE */
+    .scripture {
+      border-left: 4px solid var(--blue);
+      padding: 1.2rem 1.8rem;
+      margin: 2rem 0;
+      max-width: 600px;
+      background: var(--blue-light);
+      border-radius: 0 6px 6px 0;
+    }
+    .scripture-text {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 1rem;
+      line-height: 1.75;
+      color: #1a2a4a;
+    }
+    .scripture-ref {
+      font-family: 'Lora', serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--blue);
+      margin-top: 0.7rem;
+      display: block;
+    }
+
+    /* PLACEHOLDER */
+    .placeholder {
+      border: 1.5px dashed rgba(46,94,168,0.3);
+      background: var(--blue-light);
+      padding: 0.85rem 1.2rem;
+      margin: 1.5rem 0;
+      max-width: 560px;
+      font-family: 'Lora', serif;
+      font-size: 0.78rem;
+      font-style: italic;
+      color: var(--blue);
+      border-radius: 4px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block;
+      font-family: 'Lora', serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      background: var(--blue);
+      border: none;
+      padding: 0.75rem 1.8rem;
+      text-decoration: none;
+      margin-top: 1.5rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #1e4a8a; }
+
+    /* SIGNS */
+    .sign-cluster { display: flex; flex-wrap: wrap; gap: 1rem; margin: 2rem 0; }
+    .sign {
+      background: var(--red);
+      color: #fff;
+      font-family: 'Lora', serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 1rem 1.6rem;
+      text-align: center;
+      line-height: 1.5;
+      border-radius: 4px;
+    }
+    .sign.outline {
+      background: transparent;
+      color: var(--black);
+      border: 2px solid var(--black);
+      font-weight: 400;
+      font-style: italic;
+      font-size: 0.82rem;
+    }
+
+    /* FORM */
+    .form { max-width: 520px; margin-top: 1.5rem; }
+    .form-heading {
+      font-family: 'Lora', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 1.2rem;
+    }
+    .form-row { margin-bottom: 1rem; }
+    .form-row label {
+      display: block;
+      font-family: 'Lora', serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 0.35rem;
+    }
+    .form-row input,
+    .form-row textarea,
+    .form-row select {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid rgba(26,26,26,0.15);
+      border-radius: 4px;
+      padding: 0.65rem 0.85rem;
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      color: var(--black);
+      outline: none;
+      appearance: none;
+      transition: border-color 0.2s;
+    }
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus { border-color: var(--blue); }
+    .form-row textarea { min-height: 100px; resize: vertical; }
+    .btn-submit {
+      font-family: 'Lora', serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 0.78rem 2rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.4rem;
+    }
+    .btn-submit:hover { background: #1e4a8a; }
+    .form-success {
+      margin-top: 0.8rem;
+      font-style: italic;
+      color: var(--blue);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--black);
+      padding: 2.2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-top: 3px solid var(--red);
+    }
+    .footer-left { display: flex; align-items: center; gap: 0.9rem; }
+    .footer-logo-img { width: 30px; height: 30px; filter: invert(1); opacity: 0.55; }
+    .footer-mark { font-family: 'Lora', serif; font-size: 0.8rem; color: rgba(245,242,236,0.45); }
+    .footer-note { font-family: 'Lora', serif; font-style: italic; font-size: 0.82rem; color: rgba(245,242,236,0.25); }
+
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(12px); transition:opacity 0.6s ease,transform 0.6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* MOBILE */
+    @media (max-width: 860px) {
+      .sidebar { transform: translateX(-260px); width: 260px; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .sidebar-toggle { display: flex; }
+      .main { margin-left: 0; }
+      .hero { flex-direction: column; gap: 2rem; padding: 5rem 1.6rem 2.5rem; }
+      .page-header { padding: 2.5rem 1.6rem 2rem; }
+      .content { padding: 2.5rem 1.6rem; }
+      footer { padding: 1.8rem 1.6rem; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-logo-wrap" href="#home">
+    <img class="sidebar-logo-img" src="nfn-logo.png" alt="Nobody From Nowhere logo"/>
+    <div>
+      <div class="sidebar-logo-name">Nobody From Nowhere</div>
+      <div class="sidebar-logo-sub">Bonham, TX</div>
+    </div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Ministry</div>
+    <a href="#gospel"     class="sidebar-link"><span class="dot"></span>What is the Gospel?</a>
+    <a href="#mission"    class="sidebar-link"><span class="dot"></span>Mission Statement</a>
+    <a href="#street"     class="sidebar-link"><span class="dot"></span>Street Preaching</a>
+    <a href="#jailhouse"  class="sidebar-link"><span class="dot"></span>Jailhouse Ministry</a>
+    <div class="nav-group-label">Endeavors</div>
+    <a href="#inventions" class="sidebar-link"><span class="dot"></span>Inventions</a>
+    <a href="#log"        class="sidebar-link"><span class="dot"></span>Log Disposal</a>
+    <div class="nav-group-label">Connect</div>
+    <a href="#goals"      class="sidebar-link"><span class="dot"></span>Goals</a>
+    <a href="#contact"    class="sidebar-link"><span class="dot"></span>Contact</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a class="sidebar-ext-link" href="https://biblelineministries.org/handbook-of-personal-evangelism-by-dr-a-ray-stanford-chapter-i/" target="_blank" rel="noopener">Handbook for Personal Evangelism</a>
+  </div>
+</aside>
+<button class="sidebar-toggle" id="toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+<div class="sidebar-overlay" id="overlay"></div>
+
+<div class="main">
+
+  <!-- HERO -->
+  <header class="hero" id="home">
+    <img class="hero-logo" src="nfn-logo.png" alt="Nobody From Nowhere"/>
+    <div>
+      <p class="hero-eyebrow">Just a Ministry · Bonham, Texas</p>
+      <h1 class="hero-title">Nobody From Nowhere</h1>
+      <div class="hero-bar"></div>
+      <p class="hero-verse">"For after that in the wisdom of God the world by wisdom knew not God, it pleased God by the foolishness of preaching to save them that believe."</p>
+      <p class="hero-ref">1 Corinthians 1:21 · KJV</p>
+    </div>
+  </header>
+
+  <!-- GOSPEL -->
+  <div class="page-header red" id="gospel">
+    <p class="page-header-eyebrow">Ministry</p>
+    <h2 class="page-header-title">What is the Gospel?</h2>
+  </div>
+  <div class="content">
+    <p class="body-text reveal">Gospel is just a word like any other — it specifically means <strong>good news</strong>. But what good news? Costco and Walmart have good news. So what good news are we talking about?</p>
+    <p class="body-text reveal">The gospel is the good news that <strong>you can know you're going to heaven when you die — before you die.</strong></p>
+    <div class="scripture reveal">
+      <p class="scripture-text">"These things have I written unto you that believe on the name of the Son of God; that ye may know that ye have eternal life."</p>
+      <span class="scripture-ref">1 John 5:13 · KJV</span>
+    </div>
+
+    <!-- POINT 1 -->
+    <div style="margin-top:2.5rem;" class="reveal">
+      <p style="font-family:'Lora',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.3rem;">Point 1</p>
+      <h3 style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:0.8rem;">All Have Sinned</h3>
+      <p class="body-text">Everyone is a sinner, less perfect than God. The Virgin Mary, the Pope, your minister, your mother, you and I — all are sinners.</p>
+      <div class="scripture" style="margin-top:1rem;">
+        <p class="scripture-text">"For all have sinned and come short of the glory of God."</p>
+        <span class="scripture-ref">Romans 3:23 · KJV</span>
+      </div>
+      <div class="scripture" style="margin-top:0.8rem;">
+        <p class="scripture-text">"For there is not a just man upon earth, that doeth good and sinneth not."</p>
+        <span class="scripture-ref">Ecclesiastes 7:20 · KJV</span>
+      </div>
+      <div class="placeholder" style="margin-top:0.8rem;">✦ More scripture to be added — Is. 64:6, 1 John 3:4, Jam. 4:17, Jam. 2:10, Rom. 7:21</div>
+    </div>
+
+    <!-- POINT 2 -->
+    <div style="margin-top:2.5rem;" class="reveal">
+      <p style="font-family:'Lora',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.3rem;">Point 2</p>
+      <h3 style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:0.8rem;">Eternal Separation</h3>
+      <p class="body-text">The result and penalty of sin is death — separation from God. Sin is not paid for by good works, penance, church membership, water baptism, etc. Sin is paid for by death. God does not hate the sinner, but He hates the sin. He hates sin because it separates us from Him, and He doesn't want us to be separated from Him.</p>
+      <div class="scripture" style="margin-top:1rem;">
+        <p class="scripture-text">"For the wages of sin is death…"</p>
+        <span class="scripture-ref">Romans 6:23 · KJV</span>
+      </div>
+      <div class="scripture" style="margin-top:0.8rem;">
+        <p class="scripture-text">"In flaming fire taking vengeance on them that know not God and that obey not the gospel of our Lord Jesus Christ: Who shall be punished with everlasting destruction from the presence of the Lord and from the glory of His power."</p>
+        <span class="scripture-ref">2 Thessalonians 1:8–9 · KJV</span>
+      </div>
+      <div class="placeholder" style="margin-top:0.8rem;">✦ More scripture to be added — Rev. 20:15, Luke 16:19-31, Nah. 1:3a, Isa. 59:2</div>
+    </div>
+
+    <!-- POINT 3 -->
+    <div style="margin-top:2.5rem;" class="reveal">
+      <p style="font-family:'Lora',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.3rem;">Point 3</p>
+      <h3 style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:0.8rem;">Absolute Perfection</h3>
+      <p class="body-text">The eternal heaven will be a perfect place. No sin could enter this heaven. Man must be perfectly righteous to go to heaven.</p>
+      <div class="scripture" style="margin-top:1rem;">
+        <p class="scripture-text">"Nevertheless we, according to His promise, look for new heavens and a new earth, wherein dwelleth righteousness."</p>
+        <span class="scripture-ref">2 Peter 3:13 · KJV</span>
+      </div>
+      <div class="placeholder" style="margin-top:0.8rem;">✦ More scripture to be added — Matt. 5:48, Rom. 3:23</div>
+    </div>
+
+    <!-- POINT 4 -->
+    <div style="margin-top:2.5rem;" class="reveal">
+      <p style="font-family:'Lora',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.3rem;">Point 4</p>
+      <h3 style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:0.8rem;">Not of Works</h3>
+      <p class="body-text">Nothing man could do could help him obtain the absolute perfection God requires for eternal life.</p>
+      <div class="scripture" style="margin-top:1rem;">
+        <p class="scripture-text">"For by grace are ye saved through faith; and that not of yourselves: It is the gift of God: Not of works, lest any man should boast."</p>
+        <span class="scripture-ref">Ephesians 2:8–9 · KJV</span>
+      </div>
+      <div class="placeholder" style="margin-top:0.8rem;">✦ More scripture to be added — Tit. 3:5, Rom. 4:5, Rom. 11:6</div>
+    </div>
+
+    <!-- POINT 5 -->
+    <div style="margin-top:2.5rem;" class="reveal">
+      <p style="font-family:'Lora',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.3rem;">Point 5</p>
+      <h3 style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:0.8rem;">Sufficient Payment</h3>
+      <p class="body-text">Christ made a complete payment for all sin and offers His righteousness. Christ never sinned. He lived a perfect life. Yet He took our sins upon Himself and paid for them. He did this so He could give us God's righteousness in place of our sin.</p>
+      <div class="scripture" style="margin-top:1rem;">
+        <p class="scripture-text">"For He hath made Him to be sin for us, who knew no sin; that we might be made the righteousness of God in Him."</p>
+        <span class="scripture-ref">2 Corinthians 5:21 · KJV</span>
+      </div>
+      <div class="placeholder" style="margin-top:0.8rem;">✦ More scripture to be added — Heb. 9:22, Heb. 9:14, Lev. 17:11</div>
+    </div>
+
+    <!-- POINT 6 -->
+    <div style="margin-top:2.5rem;" class="reveal">
+      <p style="font-family:'Lora',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.3rem;">Point 6</p>
+      <h3 style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:0.8rem;">Believe and Receive</h3>
+      <p class="body-text">All man must do to be saved is to BELIEVE Jesus was the Lord who paid for all his sin — RECEIVE Christ as his Saviour. God gives eternal life only to those who will accept it by faith alone.</p>
+      <div class="placeholder" style="margin-top:0.8rem;">✦ More scripture to be added — John 6:47, John 3:16, John 5:24, Luke 8:12, John 6:28-29</div>
+    </div>
+
+    <!-- POINT 7 -->
+    <div style="margin-top:2.5rem;" class="reveal">
+      <p style="font-family:'Lora',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.3rem;">Point 7</p>
+      <h3 style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:0.8rem;">Everlasting Means Forever</h3>
+      <p class="body-text">Man can know he has eternal life now because eternal life IS eternal. Notice — the gift of God is ETERNAL LIFE. Not "life until you sin again," nor "life until you backslide."</p>
+      <div class="scripture" style="margin-top:1rem;">
+        <p class="scripture-text">"For the wages of sin is death; but the gift of God is eternal life through Jesus Christ our Lord."</p>
+        <span class="scripture-ref">Romans 6:23 · KJV</span>
+      </div>
+      <div class="placeholder" style="margin-top:0.8rem;">✦ More scripture to be added — 2 Tim. 2:13, 2 Pet. 3:9, John 6:37</div>
+    </div>
+
+    <!-- CLOSING NOTE -->
+    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--rule);" class="reveal">
+      <p class="body-text" style="font-style:italic;color:var(--mid);">This is stolen from the handbook, and with added scripture! Yankee said I could steal it, so that clearly makes it okay. I am entered into the labors of them that went before me and boy do I need all the help I can get. The Lord will judge, and I have his help, and it will be worth it all.</p>
+    </div>
+
+    <a class="btn reveal" style="margin-top:2rem;" href="https://biblelineministries.org/handbook-of-personal-evangelism-by-dr-a-ray-stanford-chapter-i/" target="_blank" rel="noopener">Handbook for Personal Evangelism ↗</a>
+  </div>
+
+  <!-- MISSION -->
+  <div class="page-header" id="mission">
+    <p class="page-header-eyebrow">Ministry</p>
+    <h2 class="page-header-title">Family Mission Statement</h2>
+    <p class="page-header-sub">This is not doctrine — it is the frame our household uses to guide our decisions. Anyone who believes Jesus died for their sins is my brother or sister in Christ. Feel free to steal it or make up one for your family.</p>
+  </div>
+  <div class="content">
+    <p class="body-text reveal">We believe Jesus, who is called the Christ, died for the sin and iniquity of the entire world. And because we believe his sacrifice was for us, He will take us to heaven to be with God for eternity.</p>
+    <p class="body-text reveal">Because we believe this, we find it morally and eternally imperative to tell other people this good news, so that they can put their faith in Christ and go to heaven as well.</p>
+    <p class="body-text reveal">Due to this imperative our mission as a household is to be found faithful with whatsoever we have and use it for the furtherance of the gospel being shared with others.</p>
+    <p class="body-text reveal">Therefore, our choices are the foundation of our faithfulness based on the Word of God.</p>
+    <p class="body-text reveal" style="margin-top:1.2rem;">Let our words be pleasing unto the Lord. Let our actions serve his purposes and not our own. Let us rely solely on Jesus and His Word.</p>
+  </div>
+
+  <!-- STREET PREACHING -->
+  <div class="page-header red" id="street">
+    <p class="page-header-eyebrow">Ministry</p>
+    <h2 class="page-header-title">Street Preaching</h2>
+  </div>
+  <div class="content">
+    <div class="sign-cluster reveal">
+      <div class="sign">Are you going to heaven?<br>You can know.</div>
+      <div class="sign outline">HWY 78 &amp; 56<br>Bonham, TX</div>
+    </div>
+    <p class="body-text reveal">I stand on the corner of Highway 78 and 56 in Bonham, Texas and hold a bunch of signs. The chief sign says: <strong>Are you going to heaven? You can know.</strong></p>
+    <p class="body-text reveal">I had the idea during a Bible study when we went through 1 Corinthians chapter 1. When we got to verse 21 I just laughed out loud, because I had this image in my head of me getting laughed at holding up a sign in my truck bed. Everyone just looked at me for my strange unexpected outburst, and I explained myself — to which my best friend said 'well now you have to do it.' And so I did, and now I do.</p>
+    <p class="body-text reveal">Don't know how long I will do it for or how profitable it is on this side of heaven. But to the people who stopped by and changed their minds and put their faith in Christ: worth it.</p>
+    <div class="placeholder reveal">✦ Photos of street preaching — to be added</div>
+  </div>
+
+  <!-- JAILHOUSE -->
+  <div class="page-header" id="jailhouse">
+    <p class="page-header-eyebrow">Ministry</p>
+    <h2 class="page-header-title">Jailhouse Ministry</h2>
+  </div>
+  <div class="content">
+    <p class="body-text reveal">I asked the Lord for an opportunity to serve, and He put it in my way. He gave me the choice of whether or not to take it, and I had the desire; so I went for it. I preach one sermon to a different group of guys each week.</p>
+    <p class="body-text reveal">The sermon works through 1 Corinthians chapter 3 — establishing the gospel first, then showing from Paul's letter to the Corinthians why God leaves believers on the earth after salvation, what good works are and are not, and how God will reward each believer's choices at the judgment seat of Christ.</p>
+    <p class="body-text reveal">I'm not allowed to bring in anything to the jail but a Bible — no cameras or other materials. But I want people to feel involved in this ministry. On my <a href="https://www.youtube.com/@nobodyfromnowhere5804" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;">YouTube channel</a> I'm working on putting up a 'Q&amp;A from the Jail' so that others can see how good the inmates' questions are, and the responses I gave from the Bible — with a follow up answer if I didn't have a biblical answer at the time and needed to go and study.</p>
+    <a class="btn reveal" href="1Cor3_Sermon.docx" download>Download Sermon — 1 Corinthians 3 ↓</a>
+  </div>
+
+  <!-- INVENTIONS -->
+  <div class="page-header red" id="inventions">
+    <p class="page-header-eyebrow">Endeavors</p>
+    <h2 class="page-header-title">Inventions</h2>
+  </div>
+  <div class="content">
+    <p class="body-text reveal">The intent of building inventions is as a hook for the gospel. I have a utility patent for a prototype and am working on my next prototype currently.</p>
+    <p class="body-text reveal">In Genesis 1:28 God gives clear instructions to mankind to 'subdue the earth' — meaning to take raw materials and build something from them. By designing and building prototypes I hope to show others Christ through the work of my hands. All for the honor and glory of the Lord. <strong>Matthew 5:16.</strong></p>
+    <p class="body-text reveal">Check out some of my work on <a href="https://github.com/lclimitedenergy-stack" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;">Github</a> that I "vibecoded" as the youths call it.</p>
+    <p class="body-text reveal">Queries are handled by <strong>Charles</strong>, an AI phone receptionist agent, who takes down your information and notifies me later — so as not to interrupt work or ministry.</p>
+    <div class="placeholder reveal">✦ Invention details and Charles contact integration — to be added</div>
+  </div>
+
+  <!-- LOG DISPOSAL -->
+  <div class="page-header" id="log">
+    <p class="page-header-eyebrow">Endeavors</p>
+    <h2 class="page-header-title">Log Disposal</h2>
+  </div>
+  <div class="content">
+    <p class="body-text reveal">We have a sawmill and a kiln where we recycle trees from arborists or customers and turn them into usable lumber.</p>
+    <p class="body-text reveal">I didn't design the trees or make them grow, but I hope to show the handiwork and beauty of God's creation in the grain of these logs.</p>
+    <div class="form">
+      <h3 class="form-heading reveal">Send an Inquiry</h3>
+      <div class="form-row reveal"><label>Your Name</label><input type="text" placeholder="Full name"/></div>
+      <div class="form-row reveal"><label>Phone or Email</label><input type="text" placeholder="Best way to reach you"/></div>
+      <div class="form-row reveal">
+        <label>What do you have?</label>
+        <select>
+          <option value="">— Select —</option>
+          <option>Logs to dispose of (arborist)</option>
+          <option>Logs to dispose of (individual)</option>
+          <option>Looking to purchase lumber</option>
+          <option>Both / Not sure</option>
+        </select>
+      </div>
+      <div class="form-row reveal"><label>Details</label><textarea placeholder="Species, quantity, location, or any other details..."></textarea></div>
+      <button class="btn-submit reveal" onclick="document.getElementById('form-msg').style.display='block'">Send Inquiry</button>
+      <p class="form-success" id="form-msg">Message received — we'll be in touch.</p>
+    </div>
+  </div>
+
+  <!-- GOALS -->
+  <div class="page-header" id="goals">
+    <p class="page-header-eyebrow">Follow Along</p>
+    <h2 class="page-header-title">Goals</h2>
+    <p class="page-header-sub">A running list of where things are headed — so anyone following along can see what's in progress, what's done, and what's next.</p>
+  </div>
+  <div class="content">
+
+    <p class="body-text reveal" style="margin-bottom:2rem;">A running list of goals for the year — updated as things move.</p>
+
+    <!-- GOAL CARD -->
+    <div class="reveal" style="max-width:580px;">
+
+      <!-- TRACT GOAL -->
+      <div style="background:#fff;border:1.5px solid var(--rule);border-radius:8px;padding:1.8rem;margin-bottom:1.2rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <div>
+            <p style="font-family:'Lora',serif;font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:0.35rem;">Ministry · 2025</p>
+            <p style="font-family:'Lora',serif;font-size:1.05rem;font-weight:700;color:var(--black);">Pass out 1,200 gospel tracts</p>
+          </div>
+          <span style="font-family:'Lora',serif;font-size:0.72rem;font-weight:700;color:var(--blue);background:var(--blue-light);padding:0.3rem 0.8rem;border-radius:20px;white-space:nowrap;">In Progress</span>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div style="margin-bottom:0.6rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
+            <span style="font-family:'Lora',serif;font-size:0.78rem;color:var(--mid);">540 passed out</span>
+            <span style="font-family:'Lora',serif;font-size:0.78rem;font-weight:700;color:var(--black);">1,200 goal</span>
+          </div>
+          <div style="background:var(--light);border-radius:99px;height:10px;overflow:hidden;">
+            <div style="width:45%;height:100%;background:linear-gradient(to right,var(--blue),var(--red));border-radius:99px;transition:width 1s ease;"></div>
+          </div>
+          <p style="font-family:'Lora',serif;font-size:0.72rem;font-style:italic;color:var(--mid);margin-top:0.5rem;">45% — 660 to go</p>
+        </div>
+      </div>
+
+      <!-- MORE GOALS PLACEHOLDER -->
+      <div class="placeholder" style="margin-top:0.5rem;">✦ More goals to be added — send them whenever you're ready</div>
+    </div>
+
+  </div>
+
+  <!-- CONTACT -->
+  <div class="page-header red" id="contact">
+    <p class="page-header-eyebrow">Connect</p>
+    <h2 class="page-header-title">Get in Touch</h2>
+  </div>
+  <div class="content">
+    <p class="body-text reveal">I'm not the best about staying in touch or getting back to responses yet, but if nothing else you can find me on the corner on the Wednesdays I'm in Texas.</p>
+    <p class="body-text reveal">Email: <a href="mailto:lc.limited.energy@gmail.com" style="color:var(--blue);font-weight:700;">lc.limited.energy@gmail.com</a></p>
+    <div class="placeholder reveal">✦ Contact placeholder removed — your words and email now live here</div>
+    <div class="scripture reveal">
+      <p class="scripture-text">"Be ready always to give an answer to every man that asketh you a reason of the hope that is in you."</p>
+      <span class="scripture-ref">1 Peter 3:15 · KJV</span>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-left">
+      <img class="footer-logo-img" src="nfn-logo.png" alt="NFN"/>
+      <div class="footer-mark">Nobody From Nowhere · Bonham, TX</div>
+    </div>
+    <div class="footer-note">Just another hook in the water — Matt. 4:19</div>
+  </footer>
+
+</div>
+
+<script>
+  const sidebar=document.getElementById('sidebar'),toggle=document.getElementById('toggle'),overlay=document.getElementById('overlay');
+  const openSB=()=>{sidebar.classList.add('open');overlay.classList.add('open');toggle.classList.add('open');};
+  const closeSB=()=>{sidebar.classList.remove('open');overlay.classList.remove('open');toggle.classList.remove('open');};
+  toggle.addEventListener('click',()=>sidebar.classList.contains('open')?closeSB():openSB());
+  overlay.addEventListener('click',closeSB);
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.addEventListener('click',()=>{if(window.innerWidth<=860)closeSB();}));
+
+  // Scroll spy
+  const ids=['home','gospel','mission','street','jailhouse','inventions','log','goals','contact'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+          const a=document.querySelector('.sidebar-link[href="#'+id+'"]');
+          if(a)a.classList.add('active');
+        }
+      });
+    },{threshold:0.25}).observe(el);
+  });
+
+  // Reveal
+  document.querySelectorAll('.reveal').forEach(el=>
+    new IntersectionObserver((e,o)=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');o.unobserve(x.target);}});},{threshold:0.08}).observe(el)
+  );
+</script>
+</body>
+</html>
